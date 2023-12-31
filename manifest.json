@@ -2,7 +2,14 @@
   "manifest_version": 3,
   "name": "TimeTab",
   "version": "1.0",
-  "permissions": ["tabs", "activeTab", "storage", "webNavigation"],
+  "_permissions_comment": "webNavigation is needed to capture page reloads",
+  "permissions": [
+      "tabs",
+      "activeTab",
+      "storage",
+      "webNavigation"
+    ],
+    "action": {},
   "background":{
     "service_worker": "background.mjs",
     "type": "module"
@@ -17,12 +24,14 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": [
-        "**/*",
-        "loader.mjs",
-        "tracking.mjs"
-      ],
-      "matches": ["<all_urls>"]
+        "_comment": "careful, by using  * and **/* we are making all files available to both sw and content.js...",
+        "resources": [
+            "*",
+            "**/*",
+            "loader.mjs",
+            "tracking.mjs"
+        ],
+        "matches": ["<all_urls>"]
     }
   ],
   "content_security_policy": {
