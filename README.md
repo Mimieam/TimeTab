@@ -11,6 +11,7 @@ or
     `npm -g npx`
     `npm start`
 
-Only a runner that will open launch your unpacked extension in chrome for ya!
 
-    
+
+
+https://v8.dev/features/modules#mjs

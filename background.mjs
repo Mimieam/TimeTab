@@ -1,6 +1,6 @@
 // ES6 import works because SW manifest is defined as a native module.
-import {Highway} from "./messaging.mjs"
-import { TabStats } from "./tabStats.js"
+import { Highway } from "./shared/messaging.mjs"
+import { TabStats } from "./shared/tabStats.js"
 
 // new Worker(new URL('messaging.mjs', import.meta.url), { type: 'module' })
 console.log({Highway})
@@ -57,3 +57,4 @@ async function tabEventHandler(event, eventType) {
 chrome.action.onClicked.addListener((tab) => {
     console.log('clicked', tab)
 });
+

@@ -1,5 +1,5 @@
 // loader.js
-import {Highway} from "./messaging.mjs"
+import {Highway} from "../shared/messaging.mjs"
 console.log({Highway})
 console.log(`❱❱ [loader.js]`)
 const event = () => {

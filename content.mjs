@@ -1,8 +1,7 @@
-'use strict';
-console.log(`❱❱ [content.js]`)
+'use strict'; // redundant in mjs but old habits die hard
 
 const importedModulePromises = [
-    import('./content.main.mjs'),
+    import('./content/content.main.mjs'),
 ];
 
 Promise.all(importedModulePromises).then(

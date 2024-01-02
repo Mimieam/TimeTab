@@ -1,5 +1,5 @@
-import { Highway } from "./messaging.mjs"
-import { TabStats } from "./tabStats.js"
+import { Highway } from "../shared/messaging.mjs"
+import { TabStats } from "../shared/tabStats.js"
 import { setupUI, updateUI } from "./content.ui.mjs"
 //import {MiniReactivityFramework} from "./content.ui.helper.js";
 
@@ -33,9 +33,9 @@ const getCurrentDOMState = () => {
     if (document.visibilityState === 'hidden') return 'hidden';
     if (document.hasFocus()) return 'active';
     return 'passive';
-  };
-
-let state = getCurrentDOMState();
+};
+//
+//let state = getCurrentDOMState();
 
 // ⇝⇒֎⊛
 let prevEvent = chrome.storage.local.get('prevEvent')['prevEvent'] || ''
@@ -49,7 +49,13 @@ let interaction = await chrome.storage.local.get('interaction')['interaction'] |
 
 async function eventHandler(event) {
     if (!chrome.runtime?.id) {
+//        await Highway.client.request_script_reload()
+//        killIt;
+//        
         return console.warn(`⊛❱ [eventHandler] ⇒`, 'no runtime id')
+    }
+    if (event.target?.id === 'ui-host'){
+        return 
     }
     let {type, timeStamp} = event
 
@@ -81,6 +87,9 @@ async function eventHandler(event) {
 
         case 'visibilitychange':
             tabStats.recordTabIsActive()
+            console.log('visibilitychange =>', document.visibilityState, event)
+            
+            // navigator.sendBeacon - JS and its neverending surprising APIs :D 
             break;
 
         case 'pagehide':
@@ -102,8 +111,9 @@ async function eventHandler(event) {
 }
 
 async function setupEvents () {
+    window.activeEventHandler = eventHandler;
     [...INTERACTIVE_EVENTS, ...PAGE_EVENTS].forEach(
-        (eventType) => window.addEventListener(eventType, eventHandler, true)
+        (eventType) => window.addEventListener(eventType, window.activeEventHandler, true)
     );
     return true;
 }

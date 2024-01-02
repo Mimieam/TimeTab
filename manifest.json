@@ -7,9 +7,10 @@
       "tabs",
       "activeTab",
       "storage",
+      "scripting",
       "webNavigation"
-    ],
-    "action": {},
+  ],
+  "action": {},
   "background":{
     "service_worker": "background.mjs",
     "type": "module"
