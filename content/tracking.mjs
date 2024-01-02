@@ -29,13 +29,13 @@ const PAGE_EVENTS = [
     'load', 'unload', 'DOMContentLoaded', 'onreadystatechange'
 ]
 
-const getCurrentDOMState = () => {
-    if (document.visibilityState === 'hidden') return 'hidden';
-    if (document.hasFocus()) return 'active';
-    return 'passive';
-};
-//
-//let state = getCurrentDOMState();
+//const getCurrentDOMState = () => {
+//    if (document.visibilityState === 'hidden') return 'hidden';
+//    if (document.hasFocus()) return 'active';
+//    return 'passive';
+//};
+////
+////let state = getCurrentDOMState();
 
 // ⇝⇒֎⊛
 let prevEvent = chrome.storage.local.get('prevEvent')['prevEvent'] || ''
@@ -49,14 +49,11 @@ let interaction = await chrome.storage.local.get('interaction')['interaction'] |
 
 async function eventHandler(event) {
     if (!chrome.runtime?.id) {
-//        await Highway.client.request_script_reload()
-//        killIt;
-//        
         return console.warn(`⊛❱ [eventHandler] ⇒`, 'no runtime id')
     }
-    if (event.target?.id === 'ui-host'){
-        return 
-    }
+//    if (event.target?.id === 'ui-host'){
+//        return
+//    }
     let {type, timeStamp} = event
 
     if (prevEvent !== event.type){

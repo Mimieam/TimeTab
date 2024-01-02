@@ -1,4 +1,4 @@
-## TimeTab
+## ThatTotallyUselessTab
 | How long has this page been opened for?
 
 an Es6 extension with no bunlders.

@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "TimeTab",
+  "name": "ThatTotallyUselessTab",
   "version": "1.0",
   "_permissions_comment": "webNavigation is needed to capture page reloads",
   "permissions": [

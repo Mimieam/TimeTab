@@ -138,36 +138,23 @@ export function updateUI(ui, tabStats, update_container = false) {
     }
 
     ui.content.innerHTML = `
-    <p>On this browser tab (${tabStats.tabId}), the following activities took place:</p>
+        <p>On this browser tab (${tabStats.tabId}), the following activities took place:</p>
 
-<p>${tabStats.urlCounts} URLs were opened.</p>
-<p>Total interactions: ${tabStats.interactions}.</p>
+        <p>${tabStats.urlCounts} URLs opened so far.</p>
+        <p>Total interactions: ${tabStats.interactions}.</p>
 
-<p>Types of interactions:</p>
-<ul>
-    ${Object.entries(tabStats.interactionTypes).map((interactionType) => {
-        return `<li>${interactionType[0]}: ${interactionType[1]}</li>`;
-    }).join('')}
-</ul>
+        <p>Types of interactions:</p>
+        <ul>
+            ${Object.entries(tabStats.interactionTypes).map((interactionType) => {
+                return `<li>${interactionType[0]}: ${interactionType[1]}</li>`;
+            }).join('')}
+        </ul>
 
-<hr>
-<p>Additional Information:</p>
-<p>Tab was first opened: ${elapsedTime(tabStats.creationTimestamp)} ago.</p>
-<p>Time elapsed since last interaction: ${elapsedTime(tabStats.lastInteraction)}.</p>
-<p>Time spent on current page: ${elapsedTime(tabStats.timeOnCurrentPage)}.</p>
+        <hr>
+        <p>Additional Information:</p>
+        <p>Tab was first opened: <strong> ${elapsedTime(tabStats.creationTimestamp)}. </strong></p>
+        <p>Time elapsed since last interaction: ${elapsedTime(tabStats.lastInteraction)}.</p>
+        <p>Time spent on current page: <strong>${elapsedTime(tabStats.timeOnCurrentPage)}.</strong></p>
 
     `
-//        <p> On this browser tab (${tabStats.tabId})...</p>
-//        <p>${tabStats.urlCounts} urls were opened</p>
-//        <p>interactions: ${tabStats.interactions}</p>
-//        <ul>
-//            ${Object.entries(tabStats.interactionTypes).map((interactionType) => {
-//        return `<li> ${interactionType[0]}: ${interactionType[1]}</li>`
-//    }).join('')}
-//        </ul>
-//        <br/>
-//        <hr>
-//        <p>Tab first opened ${elapsedTime(tabStats.creationTimestamp)}</p>
-//        <p>Last interaction was ${elapsedTime(tabStats.lastInteraction)}</p>
-//        <p>Url opened since ${elapsedTime(tabStats.timeOnCurrentPage)}</p>
 }
