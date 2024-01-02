@@ -1,6 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "ThatTotallyUselessTab",
+  "name": "Page Time Tracker",
+  "keywords": ["page", "time", "tracker", "fun", "utility", "productivity", "workflow", "planning"],
   "version": "1.0",
   "_permissions_comment": "webNavigation is needed to capture page reloads",
   "permissions": [
