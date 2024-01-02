@@ -32,18 +32,9 @@ npm -g npx && npm start
 
 
 ## Using the Extension
-When installed, a small T icon will appear on the browser toolbar to indicate that the ext is live.
-The extension will appear in the bottom right corner when tabs are open or reloaded
+When installed, a small T icon will appear on the browser toolbar to indicate that the extension is live.
 
-
-
-Do I recommend doing this if you need some fancy UI? nope but it's fun.
-
-To install, either:
-    load the current folder as an unpacked extension
-
-or
-
+The extension UI will appear at the bottom right corner of a page when a tab is opened or reloaded
 
 
 ## Technical Overview
