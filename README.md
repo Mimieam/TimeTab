@@ -70,6 +70,6 @@ Some potential future features include:
 Pull requests are welcome! Please open an issue first to discuss any changes.
 
 ## License
-MIT
+The Unlicense
 
 Please let me know if you need any part of the README expanded on or have additional questions! 
