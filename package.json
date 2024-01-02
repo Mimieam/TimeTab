@@ -1,0 +1,15 @@
+{
+  "name": "that_totally_useless_tab",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.mjs",
+  "type": "module",
+  "scripts": {
+    "start": "npx web-ext run --source-dir . --target chromium --verbose",
+    "build": "echo \"Error: nothing to build here\" && exit 1" ,
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
