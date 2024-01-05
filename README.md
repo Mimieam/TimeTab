@@ -39,16 +39,16 @@ The extension UI will appear at the bottom right corner of a page when a tab is 
 
 ## Technical Overview
 The extension uses the Browser API to get access to open tabs and windows. 
-- `tracking.mjs`  - setup and handle events to be tracked within a page (user events, mouve move, clicks, ...etc) 
-- `background.mjs` -  setup and handle events to be tracked on the Tab itself (when a Tab is create/loaded) 
+- `tracking.mjs`  - setup and handle events to be tracked within a page (user events, mouse move, clicks, ...etc) 
+- `background.mjs` -  setup and handle events to be tracked on the Tab itself (when a Tab is created/loaded) 
 - `content.ui.mjs` contains the logic to update the ui.
 <br> 
-Note: this extension has no bunlders & no dependencies besides npx which is installed globally.
+Note: this extension has no bundlers & no dependencies besides npx which is installed globally.
 
 ## Roadmap
 Some potential future features include:
 
-- Notifications after certain time periods
+- Notifications after certain periods
 - Exporting data for reports
 - Tracking across browser sessions
 - Customizable view
