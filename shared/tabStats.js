@@ -8,18 +8,38 @@ export class TabStats {
         this.urlCounts = 0
         this.creationTimestamp = null // set by the SW directly in localStorage on Tab creation.
         this.timeOnCurrentPage = null
-        this.idleTime = null
+        this.totalIdleTime = null
+        this.idleStartTime = null
         this.foregroundCount = null
         this.lastInteraction = null
         this.hashList = new Set()
+        this.pages = []
+        this.pageHistory = []
+        this.navigationPreviousEntry = 0
+        // this.navigationStack = {
+        //     pageHistory:[],
+        //     forwardStack: [],
+        //     backStack: [],
+        // }
+        this.isUIMinimized = null
     }
 
     async save() {
         // TODO: improve this by saving all under 1 key and not one for each tab
         await chrome.storage.local.set({
-            [this.tabId]: {...this, hashList: Array.from(this.hashList)},
+            [this.tabId]: {
+                ...this,
+                hashList: Array.from(this.hashList),
+                navigationPreviousEntry: {
+                    id: this.navigationPreviousEntry?.id,
+                    index: this.navigationPreviousEntry?.index,
+                    key: this.navigationPreviousEntry?.key,
+                    ondispose: this.navigationPreviousEntry?.ondispose,
+                    sameDocument: this.navigationPreviousEntry?.sameDocument,
+                    url: this.navigationPreviousEntry?.url,
+                }
+            },
         })
-//        console.log(this)
     }
 
     async reHydrate(tabId) {
@@ -32,9 +52,21 @@ export class TabStats {
         this.foregroundCount = stats?.foregroundCount || 0
         this.lastInteraction = stats?.lastInteraction || null
         this.interactionTypes = stats?.interactionTypes || {}
+        this.totalIdleTime = stats?.totalIdleTime || 0
+        this.idleStartTime = stats?.idleStartTime || 0
         this.hashList = new Set(Array.from(stats?.hashList || []))
 //        console.log(this)
         this.tabId = tabId
+        this.pages = stats?.pages || []
+        this.pageHistory = stats?.pageHistory || []
+        this.navigationPreviousEntry = stats?.navigationPreviousEntry || {}
+        // this.navigationStack = stats?.navigationStack || {
+        //     pageHistory:[],
+        //     forwardStack: [],
+        //     backStack: [],
+        // }
+        this.isUIMinimized = stats?.isUIMinimized || true
+        return this
     }
 
     recordInteraction = function(typeName){
@@ -48,19 +80,36 @@ export class TabStats {
         }
     }
 
+    recordCurrentURL = function(url){
+        this.pageHistory = url
+        this.navigationPreviousEntry = navigation.currentEntry
+    }
+
     recordTabNavigation = function() {
-//        this.urlCounts += 1
         this._hasNavigatedToNewLocation()
-//        window.location.origin + window.location.pathname
+
         this.timeOnCurrentPage = performance.timeOrigin
         const [navigationEntry] = performance.getEntriesByType('navigation') ;
         const navigationType = navigationEntry.type;
-        this.recordInteraction(navigationType)
+
+        console.log({navigationType})
+        if (navigationType === 'back_forward') {
+            this.recordInteraction('back/forward')
+            this._handleNavigation()
+        } else {
+            this.recordInteraction(navigationType)
+        }
     }
 
     recordTabIsActive = function() {
         this.foregroundCount += 1
         this.recordInteraction('foreground')
+
+        this.totalIdleTime += (Date.now() - this.idleStartTime)
+        this.idleStartTime = null
+    }
+    recordTabIsIdled = function() {
+        this.idleStartTime = Date.now()
     }
 
     _hasNavigatedToNewLocation = function() {
@@ -71,8 +120,33 @@ export class TabStats {
             this.urlCounts += 1
         }
     }
+
+    _handleNavigation = function() {
+    // giving up on this after 4th attemps... figuring out a consistent way
+    // to distinguish between back and forth navigation is kinda insane
+    // navigation.canGoBack and canGoForward are not always consistent IMO
+    // nagivation.entries() doesn't always have the full history stack of a page.
+    if (!navigation.canGoBack){
+        //chrome blank page... the script can''t run on this so we mock that and assume it did before moving to the current page..
+        this.navigationPreviousEntry = {
+            id: -1,
+            index: -1,
+            key: -1,
+            url: ''
+        }
+        console.log("<<<< Comming from BLANK PAGE >>>>");
+    }
+    if (!navigation.canGoForward || navigation.currentEntry.index > this.navigationPreviousEntry?.index) {
+      console.log("===>>>> FORWARD BUTTON");
+    } else if (!navigation.canGoBack || navigation.currentEntry.index < this.navigationPreviousEntry?.index) {
+      console.log("===<<<< BACK BUTTON");
+    }
+
+    this.navigationPreviousEntry = navigation.currentEntry
+    }
 }
 
+// TODO: add reporting by domain accross all session in a popup maybe?
 class TimeStatsManager {
 }
 
@@ -81,3 +155,4 @@ globalThis.TabStats = TabStats
 export default {
     TabStats,
 }
+
