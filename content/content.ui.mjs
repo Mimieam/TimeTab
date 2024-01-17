@@ -1,5 +1,7 @@
 'use strict';
 
+import { elapsedTime, msToTime, trimTimeString } from '../shared/utils.js';
+
 export function createElement(tag, attributes = {}, classes = []) {
     const element = document.createElement(tag);
     Object.entries(attributes).forEach(([key, value]) => {
@@ -9,7 +11,7 @@ export function createElement(tag, attributes = {}, classes = []) {
     return element;
 }
 
-export async function setupUI(divId = 'ui') {
+export async function setupUI(divId = 'ui', tabStats) {
 
     const cssModule = await import('./content.ui.module.css', {assert: {type: 'css'}});
 
@@ -32,6 +34,13 @@ export async function setupUI(divId = 'ui') {
 
     // adding a link back to the ui obj... not really needed but easy syntax sugar
     ui.header = header
+    ui.header.innerHTML = `<input type="button" value="⇲" class="">`
+    ui.header.querySelector('input').onclick = function () {
+        // console.log('onClick')
+        // return onMinimize(ui, tabStats)
+    }
+    renderHeader(ui, tabStats)
+
     ui.headerText = headerText
     ui.content = content
     host.shadowRoot.appendChild(ui)
@@ -49,112 +58,93 @@ async function setupUIevents(ui) {
 }
 
 export function onMinimize(el, tabStats) {
-    if (el.content.style.display === "none") {
-        el.content.style.display = "block";
-        el.header.querySelector('input').value = '⇲'
-    } else {
+    // if (el.content.style.display === "none") {
+        // el.content.style.display = "block";
+        // el.header.querySelector('input').value = '⇲'
+    // } else {
         el.content.style.display = "none";
         el.header.querySelector('input').value = '⇱'
-    }
+    // }
 }
 
-function msToTime(ms) {
-    const seconds = Math.floor((ms / 1000) % 60);
-    const minutes = Math.floor((ms / (1000 * 60)) % 60);
-    const hours = Math.floor((ms / (1000 * 60 * 60)) % 24);
-    const days = Math.floor(ms / (1000 * 60 * 60 * 24));
-
-    if (days > 0) {
-        if (hours > 0) {
-            return `${days} day${days > 1 ? 's' : ''} and ${hours} hr${hours > 1 ? 's' : ''} ago`;
-        }
-        return `${days} day${days > 1 ? 's' : ''} ago`;
-    }
-
-    if (hours > 0) {
-        if (minutes > 0) {
-            return `${hours} hr${hours > 1 ? 's' : ''} and ${minutes} min${minutes > 1 ? 's' : ''} ago`;
-        }
-        return `${hours} hr${hours > 1 ? 's' : ''} ago`;
-    }
-
-    if (minutes > 0) {
-        if (seconds > 0) {
-            return `${minutes} min${minutes > 1 ? 's' : ''} and ${seconds} sec${seconds > 1 ? 's' : ''} ago`;
-        }
-        return `${minutes} min${minutes > 1 ? 's' : ''} ago`;
-    }
-
-    if (seconds > 0) {
-        return `${seconds} sec${seconds > 1 ? 's' : ''} ago`;
-    }
-
-    return '...';
+export function onMaximize(ui, tabStats) {
+        ui.content.style.display = "block";
+        ui.header.querySelector('input').value = '⇲'
+}
+export function isMinimized(ui){
+    const _isMinimized = ui.header.querySelector('input').value === '⇱'
+    // console.log(`⊛❱ [isMinimized] = ${_isMinimized}`)
+    return _isMinimized
 }
 
-function trimTimeString(_str) {
-    return _str.replaceAll(' ', '')
-        .replaceAll('and', '').replaceAll('ago', '')
-        .replace('days', 'd ').replace('day', 'd ')
-        .replace('hrs', 'h').replace('hr', 'h')
-        .replace('mins', 'm').replace('min', 'm')
-        .replace('secs', 's').replace('sec', 's')
+export function renderContent(ui, tabStats, minimized=null){
 
-}
-
-function elapsedTime(lastTime, minimized = false) {
-    if (!lastTime){
-        return null
+    if (minimized == null) {
+        minimized = isMinimized(ui) // get current state
     }
-    const now = Date.now();
-    const elapsed = now - lastTime;
-    const timeString = msToTime(elapsed);
-    return minimized ? trimTimeString(timeString) : timeString
-}
 
-export function updateUI(ui, tabStats, update_container = false) {
-//    console.log(`⊛❱ [updateUI]()`)
-    const fn = function () {
-        return onMinimize(ui, tabStats)
-    }
-    if (update_container) {
-        ui.headerText.innerHTML = `...`
-        ui.header.innerHTML = `<input type="button" value="⇲" class="minimize-btn">`
-        ui.header.querySelector('input').onclick = fn
-        // to start minimized use the 2 lines bellow
+    if (minimized) {
         ui.content.style.display = "none";
         ui.header.querySelector('input').value = '⇱'
-    }
-
-    if (ui.content.style.display !== "none") {
-        ui.headerText.style.display = "none";
-        ui.style.display = "block";
-    } else {
         ui.headerText.style.display = "block";
-        ui.headerText.innerText = elapsedTime(tabStats.timeOnCurrentPage, true) //update the headerText when ext is minified
+        ui.headerText.innerText = elapsedTime(tabStats?.timeOnCurrentPage, true) //update the headerText when ext is minified
         ui.style.display = "inline-flex";
         ui.style.flexFlow = "row";
         ui.style.alignItems = "center";
+    } else {
+        // console.log(`⊛❱ - [renderContent](minimized=${minimized})`)
+        ui.style.display = "block";
+        ui.content.style.display = "block";
+        ui.headerText.style.display = "none";
+        ui.header.querySelector('input').value = '⇲'
+
+        ui.content.innerHTML = `
+            <p class='yellowMe'>Tab [${tabStats.tabId}]:</p>
+            So far on this tab's we've...
+            <ul>
+                <li>visited ${tabStats.urlCounts} unique urls</li>
+                <li>had ${tabStats.interactions} page interactions</li>
+            </ul>
+
+            <p class='yellowMe'>Types of interactions:</p>
+            <ul>
+                ${Object.entries(tabStats.interactionTypes).sort((a,b)=> b[1] - a[1]).map((interactionType) => {
+                    return `<li>${interactionType[0]}: ${interactionType[1]}</li>`
+                }).join('')}
+            </ul>
+
+            <hr class='gradient'>
+            <p class='yellowMe'>Time stats:</p>
+            <p>Tab opened: <strong> ${elapsedTime(tabStats.creationTimestamp)}. </strong></p>
+            <p>Last interaction: ${elapsedTime(tabStats.lastInteraction)}.</p>
+            <p>Time on current page: <strong>${elapsedTime(tabStats.timeOnCurrentPage)}.</strong></p>
+            <p>Idle Time: <strong>${trimTimeString(msToTime(tabStats.totalIdleTime))}.</strong></p>
+        `
     }
+}
 
-    ui.content.innerHTML = `
-        <p>On this browser tab (${tabStats.tabId}), the following activities took place:</p>
+export function renderHeader(ui, tabStats){
+    ui.header.innerHTML = `<input type="button" value="⇲">`
+    ui.header.toggleBtn = ui.header.querySelector('input')
+    // console.log(ui.header.toggleBtn)
+    ui.header.toggleBtn.onclick = function () {
+        // console.log(`⊛❱ - [renderHeader] - toggleBtn.onclick`)
+        return toggleExtDisplay(ui, tabStats)
+    }
+}
 
-        <p>${tabStats.urlCounts} URLs opened so far.</p>
-        <p>Total interactions: ${tabStats.interactions}.</p>
+export function toggleExtDisplay(ui, tabStats){
+    const _isMinimized = isMinimized(ui)
+    renderContent(ui, tabStats, !_isMinimized)
+    return _isMinimized
+}
 
-        <p>Types of interactions:</p>
-        <ul>
-            ${Object.entries(tabStats.interactionTypes).map((interactionType) => {
-                return `<li>${interactionType[0]}: ${interactionType[1]}</li>`;
-            }).join('')}
-        </ul>
+export async function updateUI(ui, tabStats, event, minimized=null) {
+//    console.log(`⊛❱ - [updateUI](event=${event.type})`)
 
-        <hr>
-        <p>Additional Information:</p>
-        <p>Tab was first opened: <strong> ${elapsedTime(tabStats.creationTimestamp)}. </strong></p>
-        <p>Time elapsed since last interaction: ${elapsedTime(tabStats.lastInteraction)}.</p>
-        <p>Time spent on current page: <strong>${elapsedTime(tabStats.timeOnCurrentPage)}.</strong></p>
+    // ui.headerText.innerHTML = `...`
 
-    `
+    renderContent(ui, tabStats, minimized)
+
+
 }
