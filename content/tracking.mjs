@@ -11,7 +11,7 @@ const INTERACTIVE_EVENTS = [
     'scroll',
     'scrollend',
     'keypress',
-    // 'mouseover'
+    'mouseover'
 ]
 
 const PAGE_EVENTS = [
@@ -20,35 +20,24 @@ const PAGE_EVENTS = [
     'load', 'unload', 'DOMContentLoaded', 'onreadystatechange'
 ]
 
-//const getCurrentDOMState = () => {
-//    if (document.visibilityState === 'hidden') return 'hidden';
-//    if (document.hasFocus()) return 'active';
-//    return 'passive';
-//};
-////
-////let state = getCurrentDOMState();
-
 // ⇝⇒֎⊛
 let prevEvent = chrome.storage.local.get('prevEvent')['prevEvent'] || ''
 let navigationType = chrome.storage.local.get('navigationType')['navigationType'] || ''
 let interaction = await chrome.storage.local.get('interaction')['interaction'] || 0
 
 
-// document.onreadystatechange  = () => {
-//     console.log(`⊛❱ [onreadystatechange] ⇒`, document.readyState)
-// }
 // Create a debounced version of the mouseover handler
 const debouncedMouseOver = debounce(async function (event, uiDiv, tabStats) {
-    await updateUI(uiDiv, tabStats, event)
+    await updateUI(uiDiv, tabStats, event, tabStats.isUIMinimized)
 }, 100); // Adjust the delay (in milliseconds) as needed
 
 async function eventHandler(event, uiDiv, tabStats) {
     if (!chrome.runtime?.id) {
         return console.warn(`⊛❱ [eventHandler] ⇒`, 'no runtime id')
     }
-//    if (event.target?.id === 'ui-host'){
-//        return
-//    }
+   if (event.target?.id === 'ui-host'){ // to enable user-select in view
+       return
+   }
     let {type, timeStamp} = event
 
     // if (prevEvent !== event.type){
@@ -78,33 +67,32 @@ async function eventHandler(event, uiDiv, tabStats) {
             await tabStats.save() // navigated back or forward
             if (event.persisted) {
                 tabStats.recordInteraction('back')
-                console.log('This page *might* be entering the bfcache..');
-            } else {
-                console.log('This page will unload normally and be discarded.');
+                // console.log('This page *might* be entering the bfcache..');
             }
+            // else {
+            //     console.log('This page will unload normally and be discarded.');
+            // }
             break;
 
         case 'visibilitychange':
 
             console.log('visibilitychange =>', document.visibilityState, event)
             if (document.visibilityState === 'hidden'){
-                console.log("HIDDEN")
                 tabStats.recordTabIsIdled()
             } else if (document.visibilityState === 'visible'){
-                console.log("VISIBLE")
                 tabStats.recordTabIsActive()
             }
             // navigator.sendBeacon - JS and its neverending surprising APIs :D
             break;
 
-        case 'pagehide':
-            if (event.persisted) {
-                console.log('frozen');
-                // tabStats.recordInteraction('back')
-                } else {
-                console.log('terminated');
-            }
-            break;
+        // case 'pagehide':
+        //     if (event.persisted) {
+        //         console.log('frozen');
+        //         // tabStats.recordInteraction('back')
+        //         } else {
+        //         console.log('terminated');
+        //     }
+        //     break;
         case 'resume':
             console.log('resume =>', event)
             break;
@@ -121,12 +109,13 @@ async function eventHandler(event, uiDiv, tabStats) {
     await chrome.storage.local.set({prevEvent})
     await chrome.storage.local.set({interaction})
     await tabStats.save()
-    console.log(`\t⊛❱ [eventHandler(${event.type})]`)
+
+    // console.log(`\t⊛❱ [eventHandler(${event.type})]`)
     if (type === 'mouseover') {
         debouncedMouseOver(event, uiDiv, tabStats);
         // debounce(updateUI, 500); // Adjust the delay (in milliseconds) as needed
     } else {
-        updateUI(uiDiv, tabStats, event)
+        updateUI(uiDiv, tabStats, event, tabStats.isUIMinimized);
     }
     // updateUI(uiDiv, tabStats, isMinimized(uiDiv))
 }

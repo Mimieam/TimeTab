@@ -26,15 +26,14 @@ async function initialize() {
     tabStats.recordTabNavigation()  // initial load/reload
     const uiDiv = await setupUI('ui', tabStats)
     console.log('setupUI() called')
-    updateUI(uiDiv, tabStats, {}, true)
+    updateUI(uiDiv, tabStats, {}, tabStats.isUIMinimized)
     console.log('updateUI() called')
     //const mrf= new MiniReactivityFramework(tabStats)
     // console.log({mrf})
-
-    console.log('Initializing TabStats')
     await setupTrackingEvents(uiDiv, tabStats)
-    console.log('setupEvents() called')
+    console.log('setupTrackingEvents() called')
     await setupMessagingEvents(uiDiv, tabStats)
+    console.log('setupMessagingEvents() called')
 }
 
 await initialize();

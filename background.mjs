@@ -1,10 +1,9 @@
-// ES6 import works because SW manifest is defined as a native module.
+// ES6 imports work here because in manifest.json service_worker is defined as a native module.
 import { Highway } from "./shared/messaging.mjs"
 import { TabStats } from "./shared/tabStats.js"
 import { elapsedTime } from "./shared/utils.js"
 
-// new Worker(new URL('messaging.mjs', import.meta.url), { type: 'module' })
-console.log({Highway})
+
 Highway.serviceWorker.start_listening_for_events()
 
 const TAB_NAVIGATION_EVENTS = [
@@ -37,7 +36,7 @@ async function webNavigationEventHandler(event, eventType) {
 }
 
 async function tabEventHandler(event, eventType) {
-    console.log(`\t⊛❱  ❱❱ [eventHandler(${eventType})] ⇒`, event)
+    // console.log(`\t⊛❱  ❱❱ [eventHandler(${eventType})] ⇒`, event)
     switch (event.type) {
         case 'onCreated':
             const clientTab = new TabStats(event.id)
@@ -73,13 +72,13 @@ const update_icon = async (tabId)=>{
 }
 const CURRENT_TAB_STATS = new TabStats()
 chrome.action.onClicked.addListener(async (tab) => {
-    console.log('clicked', tab)
     await update_icon(tab.id)
     await Highway.serviceWorker.toggle_embedded_ui()
 });
 
+// fun fact all the EVENTs (e.i: onWhatever...) under the chrome.tabs objects do NOT need the "tab permission"
+// would be great if the documentation actually stated that... 🤦🏽‍♂️
 chrome.tabs.onActivated.addListener(async (tab)=>{
-    console.log({tab})
     await update_icon(tab.tabId)
 })
 

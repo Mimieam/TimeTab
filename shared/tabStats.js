@@ -55,7 +55,7 @@ export class TabStats {
         this.totalIdleTime = stats?.totalIdleTime || 0
         this.idleStartTime = stats?.idleStartTime || 0
         this.hashList = new Set(Array.from(stats?.hashList || []))
-//        console.log(this)
+    //    console.log({stats})
         this.tabId = tabId
         this.pages = stats?.pages || []
         this.pageHistory = stats?.pageHistory || []
@@ -65,7 +65,8 @@ export class TabStats {
         //     forwardStack: [],
         //     backStack: [],
         // }
-        this.isUIMinimized = stats?.isUIMinimized || true
+        this.isUIMinimized = stats?.isUIMinimized !==(null||undefined) ? stats.isUIMinimized : true
+        // console.log('isUIMinimized = ',stats?.isUIMinimized, this.isUIMinimized)
         return this
     }
 
@@ -92,7 +93,6 @@ export class TabStats {
         const [navigationEntry] = performance.getEntriesByType('navigation') ;
         const navigationType = navigationEntry.type;
 
-        console.log({navigationType})
         if (navigationType === 'back_forward') {
             this.recordInteraction('back/forward')
             this._handleNavigation()
@@ -110,6 +110,11 @@ export class TabStats {
     }
     recordTabIsIdled = function() {
         this.idleStartTime = Date.now()
+    }
+
+    recordUIState = function(isMinimied) {
+        this.isUIMinimized = isMinimied
+        this.save()  // the exception, not the rule - avoid doing this here
     }
 
     _hasNavigatedToNewLocation = function() {
@@ -134,12 +139,12 @@ export class TabStats {
             key: -1,
             url: ''
         }
-        console.log("<<<< Comming from BLANK PAGE >>>>");
+        // console.log("<<<< Comming from BLANK PAGE >>>>");
     }
     if (!navigation.canGoForward || navigation.currentEntry.index > this.navigationPreviousEntry?.index) {
-      console.log("===>>>> FORWARD BUTTON");
+    //   console.log("===>>>> FORWARD BUTTON");
     } else if (!navigation.canGoBack || navigation.currentEntry.index < this.navigationPreviousEntry?.index) {
-      console.log("===<<<< BACK BUTTON");
+    //   console.log("===<<<< BACK BUTTON");
     }
 
     this.navigationPreviousEntry = navigation.currentEntry

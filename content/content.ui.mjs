@@ -78,6 +78,7 @@ export function isMinimized(ui){
 }
 
 export function renderContent(ui, tabStats, minimized=null){
+    // console.log(`⊛❱ - [renderContent](minimized=${minimized} && ${tabStats.isUIMinimized})`)
 
     if (minimized == null) {
         minimized = isMinimized(ui) // get current state
@@ -92,15 +93,14 @@ export function renderContent(ui, tabStats, minimized=null){
         ui.style.flexFlow = "row";
         ui.style.alignItems = "center";
     } else {
-        // console.log(`⊛❱ - [renderContent](minimized=${minimized})`)
         ui.style.display = "block";
         ui.content.style.display = "block";
         ui.headerText.style.display = "none";
         ui.header.querySelector('input').value = '⇲'
 
         ui.content.innerHTML = `
-            <p class='yellowMe'>Tab [${tabStats.tabId}]:</p>
-            So far on this tab's we've...
+            <p class='yellowMe'>Tab #[${tabStats.tabId}]:</p>
+            So far on this tab we've...
             <ul>
                 <li>visited ${tabStats.urlCounts} unique urls</li>
                 <li>had ${tabStats.interactions} page interactions</li>
@@ -134,16 +134,16 @@ export function renderHeader(ui, tabStats){
 }
 
 export function toggleExtDisplay(ui, tabStats){
-    const _isMinimized = isMinimized(ui)
-    renderContent(ui, tabStats, !_isMinimized)
-    return _isMinimized
+    const _minimize = !isMinimized(ui)
+    tabStats.recordUIState(_minimize)
+    renderContent(ui, tabStats, _minimize)
+    return _minimize
 }
 
 export async function updateUI(ui, tabStats, event, minimized=null) {
-//    console.log(`⊛❱ - [updateUI](event=${event.type})`)
+//    console.log(`⊛❱ - [updateUI](event=${event.type}, minimized=${minimized})`)
 
     // ui.headerText.innerHTML = `...`
-
     renderContent(ui, tabStats, minimized)
 
 
