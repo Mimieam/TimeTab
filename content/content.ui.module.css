@@ -82,6 +82,7 @@ p, ul {
     /* font-weight: bold; */
     padding: 2px 5px;
     margin: 1px;
+    font-weight: bold;
     /* width: fit-content; */
 }
 .redMe {

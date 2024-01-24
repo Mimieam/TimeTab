@@ -59,7 +59,7 @@ export function debounce(func, delay) {
     return function (...args) {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
-            console.log('debounced')
+            // console.log('debounced')
             func.apply(this, args);
         }, delay);
     };

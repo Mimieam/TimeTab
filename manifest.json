@@ -1,6 +1,8 @@
 {
   "manifest_version": 3,
   "name": "BrowsEyes",
+  "description": "Get a summary of your tab behavior and interaction",
+  "offline_enabled": true,
   "icons": {
     "16": "assets/icon-16x16.png",
     "128": "assets/icon-128x128.png"
@@ -15,12 +17,11 @@
     "workflow",
     "planning"
   ],
-  "version": "0.4.0",
+  "version": "0.4.1",
   "_permissions_comment": "webNavigation is needed to capture page reloads",
   "permissions": [
-    "tabs",
+    "activeTab",
     "storage",
-    "scripting",
     "webNavigation"
   ],
   "action": {},
@@ -44,10 +45,8 @@
     {
       "_comment": "careful, by using  * and **/* we are making all files available to both sw and content.js...",
       "resources": [
-        "*",
-        "**/*",
-        "loader.mjs",
-        "tracking.mjs",
+        "shared/*",
+        "content/*",
         "assets/fonts/*"
       ],
       "matches": [

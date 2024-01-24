@@ -1,7 +1,7 @@
 {
-  "name": "that_totally_useless_tab",
+  "name": "timtab",
   "version": "1.0.0",
-  "description": "",
+  "description": "tab summary",
   "scripts": {
     "start": "npx web-ext run --source-dir . --target chromium --verbose",
     "build": "rm -rf TimeTab.zip && node updateMe.js ./manifest.json --x x.x.+1  && npx crx pack --zip-output TimeTab.zip",
