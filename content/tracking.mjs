@@ -78,10 +78,8 @@ async function eventHandler(event, uiDiv, tabStats) {
 
             console.log('visibilitychange =>', document.visibilityState, event)
             if (document.visibilityState === 'hidden'){
-                console.log("HIDDEN")
                 tabStats.recordTabIsIdled()
             } else if (document.visibilityState === 'visible'){
-                console.log("VISIBLE")
                 tabStats.recordTabIsActive()
             }
             // navigator.sendBeacon - JS and its neverending surprising APIs :D
