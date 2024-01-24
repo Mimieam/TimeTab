@@ -17,10 +17,9 @@
     "workflow",
     "planning"
   ],
-  "version": "0.4.1",
+  "version": "0.4.3",
   "_permissions_comment": "webNavigation is needed to capture page reloads",
   "permissions": [
-    "activeTab",
     "storage",
     "webNavigation"
   ],
