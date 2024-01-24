@@ -14,7 +14,7 @@
 ## Screenshots
 <img width="232" alt="image" src="https://github.com/Mimieam/TimeTab/assets/834291/5588a97b-5251-486d-83f7-bfeb8fb2bf54">
 <img width="345" alt="image" src="https://github.com/Mimieam/TimeTab/assets/834291/119a140a-518e-4d96-a06c-7a53ea26e433">v0.1
-<img width="319" alt="image" src="https://github.com/Mimieam/TimeTab/assets/834291/012beb95-2ab6-47d5-bafb-73b4034c02de">v0.4
+<img width="326" alt="image" src="https://github.com/Mimieam/TimeTab/assets/834291/dcd590e5-7856-49c2-b9c6-d9bde61eab83">v0.5
 
 
 
