@@ -1,6 +1,7 @@
 'use strict';
 
 import { elapsedTime, msToTime, trimTimeString } from '../shared/utils.js';
+// import cssModule from './content.ui.module.css';
 
 export function createElement(tag, attributes = {}, classes = []) {
     const element = document.createElement(tag);
@@ -13,7 +14,17 @@ export function createElement(tag, attributes = {}, classes = []) {
 
 export async function setupUI(divId = 'ui', tabStats) {
 
-    const cssModule = await import('./content.ui.module.css', {assert: {type: 'css'}});
+    // const cssModule = await import('./content.ui.module.css', {assert: {type: 'css'}});  // this is now deprecated... 
+    const cssModule = await import('./content.ui.module.css', {with: {type: 'css'}});
+
+    const sheet = new CSSStyleSheet();
+    await sheet.replace('@import url("myStyle.css")')
+    // .then(sheet => {
+    //     console.log('Styles loaded successfully');
+    // })
+    // .catch(err => {
+    //     console.error('Failed to load:', err);
+    // });
 
     const ui = createElement("div", {}, ["tabStats"])
     const header = createElement("div", {}, ["header"])
@@ -25,6 +36,7 @@ export async function setupUI(divId = 'ui', tabStats) {
     host.attachShadow({mode: 'open'});
     document.body.appendChild(host)
     host.shadowRoot.adoptedStyleSheets = [cssModule.default]
+    // host.shadowRoot.adoptedStyleSheets = [sheet]
 
     ui.id = divId
 

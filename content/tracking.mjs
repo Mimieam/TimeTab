@@ -17,7 +17,9 @@ const INTERACTIVE_EVENTS = [
 const PAGE_EVENTS = [
     'beforeunload', 'pagehide', 'pageshow',
     'focus', 'blur', 'visibilitychange', 'resume',
-    'load', 'unload', 'DOMContentLoaded', 'onreadystatechange'
+    'load', 
+    // 'unload', 
+    'DOMContentLoaded', 'onreadystatechange'
 ]
 
 // ⇝⇒֎⊛
