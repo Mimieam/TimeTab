@@ -6,6 +6,9 @@ const event = () => {
 
     const blueishGray = '#9ba6d1'
     const kindaNicePink = '#fb8990'
+    const blueishGreen = '#9dd5c1'
+    
+
 
     const logStyle = [
         `background: ${blueishGray}`,

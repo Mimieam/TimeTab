@@ -2,24 +2,24 @@
     This should be a tiny npm package :)
     updateMe
     - will update any json file that have a version property .. or not :D
-    
+
 2 ways use masking - can increment arbitr
 node updateMe.js ./manifestmv3.json --x x.x.+3
 
 simple verbose - only increment by one
-node updateMe.js ./manifestmv3.json --bump major                       
+node updateMe.js ./manifestmv3.json --bump major
 node updateMe.js ./manifestmv3.json --bump minor
 node updateMe.js ./manifestmv3.json --bump patch
 
-lazy way - increment by one with a rolling increment - not hooked 
-    node updateMe.js ./manifestmv3.json  
+lazy way - increment by one with a rolling increment - not hooked
+    node updateMe.js ./manifestmv3.json
 */
 
 const fs = require('fs')
 function updateVersion(fileName, default_inc = 1, minor_rollover = 10, patch_rollover = 10) {
     // Read the manifest file
     const manifest = require(fileName);
-    
+
 
     let version = manifest.version;
     if (!version){
@@ -60,11 +60,11 @@ function updateVersionWithMask(fileName, mask){
     }
     const newVersion = maskVersion(version, mask)
     console.log(`Updating ${fileName}: ${manifest.version} => ${newVersion}`)
-    
+
     if (Number.isNaN(newVersion)){
         throw new Error (`Could NOT update version of ${fileName} to ${newVersion}`)
     }
-    
+
     manifest.version = newVersion;
     const manifest_JSON = JSON.stringify(manifest, null, 2);
     fs.writeFileSync(fileName, manifest_JSON, { encoding: 'utf8', flag: 'w' });
@@ -106,23 +106,23 @@ try {
     let minor_rollover = 10;
     let patch_rollover = 10;
     let mask = null
-    
+
     let [filename, subcmd, subcmd_arg, ...rest] = args;
     // console.log({filename, subcmd, subcmd_arg, rest})
-    
+
     if (!filename) {
         throw new Error('Please provide a filename. \n\tEx: updateMe.js [filename] --x [versionMask]');
     }
-    
+
     if (subcmd === '--x') {
         console.log("Usage: node updateMe.js [filename] --x [versionMask]");
         if (!subcmd_arg || (subcmd_arg.length < 5)){
             throw new Error("Invalid versionMask, expects x.x.x syntax")
         }
-        return updateVersionWithMask(filename, subcmd_arg)
-        
+        return updateVersionWithMask(filename, subcmd_arg)  // js... returning outside a fn... and it's fine???
+
     } else if (subcmd === '--bump') {
-        
+
         if (!["major", "minor", "patch"].includes(subcmd_arg)){
             console.log("Usage: node updateMe.js [filename] --bump <major|minor|patch>")
             throw new Error("Invalid bump argument...")
@@ -134,9 +134,9 @@ try {
         }
         return updateVersionWithMask(filename, mask)
     } else {
-        throw new Error("Please use a valid option: \n\tnode updateMe.js [filename] --x [versionMask] \n\tnode updateMe.js [filename] --bump <major|minor|patch>"); 
+        throw new Error("Please use a valid option: \n\tnode updateMe.js [filename] --x [versionMask] \n\tnode updateMe.js [filename] --bump <major|minor|patch>");
     }
-            
+
 } catch (error) {
     console.error(`Error: ${error.message}`, error);
     process.exit(1);
